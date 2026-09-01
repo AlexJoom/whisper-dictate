@@ -1,0 +1,23 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [ "setuptools>=61.2" ]
+
+[project]
+name = "whisper-dictate"
+version = "0.1.0"
+description = "Push-to-talk voice dictation for Ubuntu (Greek + English) powered by local Whisper"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+  "openai-whisper",
+  "numpy",
+  "pynput>=1.7",
+  "python-xlib",
+]
+optional-dependencies.dev = [ "pytest" ]
+scripts.whisper-dictate = "whisper_dictate.app:main"
+urls = { Homepage = "https://github.com/AlexJoom/whisper-dictate" }
+
+[tool.setuptools]
+packages = [ "whisper_dictate" ]
