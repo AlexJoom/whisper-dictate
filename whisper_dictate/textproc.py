@@ -40,6 +40,26 @@ COMMANDS = [
     (r"αλλαγή\s+παραγράφου", "\n\n"),
 ]
 
+# Spoken punctuation -> mark. The mark is glued to the previous word and a
+# space follows it; punctuation Whisper already placed next to the spoken
+# command is merged away. Greek uses ";" as its question mark.
+PUNCTUATION = [
+    (r"question\s+mark", "?"),
+    (r"exclamation\s+(?:mark|point)", "!"),
+    (r"full\s+stop|period", "."),
+    (r"comma", ","),
+    (r"semicolon", ";"),
+    (r"colon", ":"),
+    (r"ellipsis", "…"),
+    (r"ερωτηματικό", ";"),
+    (r"θαυμαστικό", "!"),
+    (r"άνω\s+και\s+κάτω\s+τελεία", ":"),
+    (r"άνω\s+τελεία", "·"),
+    (r"τελεία", "."),
+    (r"κόμμα", ","),
+    (r"αποσιωπητικά", "…"),
+]
+
 _SENTENCE_END = ".!?;…"
 
 
@@ -47,6 +67,7 @@ _SENTENCE_END = ".!?;…"
 class TextOptions:
     remove_fillers: bool = True
     voice_commands: bool = True
+    spoken_punctuation: bool = True
     capitalize: bool = True
     trailing_space: bool = True
 
@@ -78,16 +99,30 @@ def apply_commands(text: str) -> str:
     return text
 
 
+def apply_spoken_punctuation(text: str) -> str:
+    for pat, mark in PUNCTUATION:
+        # swallow punctuation Whisper put right before/after the spoken command
+        text = re.sub(
+            r"[,.;:!?…]?\s*(?<![\wͰ-Ͽ])(?:" + pat + r")(?![\wͰ-Ͽ])[,.;:!?…]?\s*",
+            mark + " ",
+            text,
+            flags=re.IGNORECASE,
+        )
+    return text
+
+
 def _tidy_punctuation(text: str) -> str:
-    text = re.sub(r"\s+([,.;:!?])", r"\1", text)  # "word ," -> "word,"
-    text = re.sub(r"([,.;:!?])\1+", r"\1", text)  # ",," -> ","
-    text = re.sub(r"^[,.;:]\s*", "", text)  # leading punctuation left behind
-    text = re.sub(r"\n[,.;:]\s*", "\n", text)
+    text = re.sub(r"\s+([,.;:!?…·])", r"\1", text)  # "word ," -> "word,"
+    text = re.sub(r"([,.;:!?…·])(?:\s*\1)+", r"\1", text)  # ",," / "? ?" -> single mark
+    text = re.sub(r"^[,.;:·]\s*", "", text)  # leading punctuation left behind
+    text = re.sub(r"\n[,.;:·]\s*", "\n", text)
     text = re.sub(r"[ \t]{2,}", " ", text)
     return text.strip()
 
 
-def capitalize_lines(text: str) -> str:
+def capitalize_sentences(text: str, lang: str = "") -> str:
+    """Upper-case the first letter of the text, of each line and of each sentence."""
+
     def cap(line: str) -> str:
         for i, ch in enumerate(line):
             if ch.isalpha():
@@ -96,7 +131,19 @@ def capitalize_lines(text: str) -> str:
                 return line
         return line
 
+    ends = ".!?…"
+    if lang == "el":
+        ends += ";"  # Greek question mark
+    text = re.sub(
+        r"([" + re.escape(ends) + r"]\s+)([^\W\d_])",
+        lambda m: m.group(1) + m.group(2).upper(),
+        text,
+    )
     return "\n".join(cap(line) for line in text.split("\n"))
+
+
+# backwards-compatible name
+capitalize_lines = capitalize_sentences
 
 
 def clean_transcript(text: str, lang: str, opts: TextOptions | None = None) -> str:
@@ -105,6 +152,8 @@ def clean_transcript(text: str, lang: str, opts: TextOptions | None = None) -> s
     text = re.sub(r"\s+", " ", text).strip()
     if not text or is_hallucination(text):
         return ""
+    if opts.spoken_punctuation:
+        text = apply_spoken_punctuation(text)
     if opts.voice_commands:
         text = apply_commands(text)
     if opts.remove_fillers:
@@ -113,7 +162,7 @@ def clean_transcript(text: str, lang: str, opts: TextOptions | None = None) -> s
     if not text or is_hallucination(text):
         return ""
     if opts.capitalize:
-        text = capitalize_lines(text)
+        text = capitalize_sentences(text, lang)
     if opts.trailing_space and not text.endswith("\n"):
         text += " "
     return text

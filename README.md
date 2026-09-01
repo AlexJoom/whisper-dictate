@@ -22,7 +22,11 @@ Auto-edits, like Wispr Flow:
 * language of every dictation is detected automatically between Greek and English
 * filler words are removed ("um", "uh", "εε", "εμ" ...)
 * "new line" / "new paragraph" / "νέα γραμμή" / "νέα παράγραφος" become line breaks
-* first letter is capitalized, a space is added after the text so dictations chain nicely
+* spoken punctuation works when you want to be explicit: "question mark", "comma",
+  "full stop", "exclamation mark", "ερωτηματικό", "κόμμα", "τελεία", "θαυμαστικό"
+  (Whisper already punctuates from your intonation, so this is optional)
+* first letter of the text and of each sentence is capitalized, a space is added after
+  the text so dictations chain nicely
 * known Whisper hallucinations on silence ("Υπότιτλοι AUTHORWAVE", "Thank you.") are dropped
 * every dictation is saved to `~/.local/share/whisper-dictate/history.jsonl`
 

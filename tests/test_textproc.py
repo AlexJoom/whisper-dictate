@@ -43,3 +43,31 @@ def test_empty_and_whitespace():
 def test_commands_can_be_disabled():
     opts = TextOptions(voice_commands=False, trailing_space=False)
     assert clean_transcript("say new line please", "en", opts) == "Say new line please"
+
+
+def test_spoken_question_mark_english():
+    assert clean_transcript("are you coming tomorrow question mark", "en", NO_SPACE) == "Are you coming tomorrow?"
+
+
+def test_spoken_punctuation_merges_with_whisper_punctuation():
+    assert clean_transcript("Are you coming, question mark? yes", "en", NO_SPACE) == "Are you coming? Yes"
+
+
+def test_spoken_comma_and_full_stop():
+    out = clean_transcript("hello comma how are you full stop fine", "en", NO_SPACE)
+    assert out == "Hello, how are you. Fine"
+
+
+def test_spoken_punctuation_greek():
+    assert clean_transcript("θα έρθεις αύριο ερωτηματικό ναι τελεία", "el", NO_SPACE) == "Θα έρθεις αύριο; Ναι."
+    assert clean_transcript("γεια σου κόμμα τι κάνεις θαυμαστικό", "el", NO_SPACE) == "Γεια σου, τι κάνεις!"
+
+
+def test_spoken_punctuation_can_be_disabled():
+    opts = TextOptions(spoken_punctuation=False, trailing_space=False)
+    assert clean_transcript("add a comma here", "en", opts) == "Add a comma here"
+
+
+def test_greek_semicolon_capitalizes_next_sentence_only_in_greek():
+    assert clean_transcript("τι κάνεις; καλά είμαι", "el", NO_SPACE) == "Τι κάνεις; Καλά είμαι"
+    assert clean_transcript("one; two", "en", NO_SPACE) == "One; two"

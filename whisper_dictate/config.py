@@ -57,7 +57,11 @@ min_duration = 0.4
 remove_fillers = true
 # Turn "new line" / "new paragraph" / "νέα γραμμή" / "νέα παράγραφος" into line breaks.
 voice_commands = true
-# Capitalize the first letter of the dictation and of each new line.
+# Turn spoken punctuation into marks: "question mark", "comma", "full stop",
+# "exclamation mark", "ερωτηματικό", "κόμμα", "τελεία", "θαυμαστικό" ...
+# Whisper already punctuates from your intonation; this is for when you want to be explicit.
+spoken_punctuation = true
+# Capitalize the first letter of the dictation, of each new line and of each sentence.
 capitalize = true
 # Add a space after the inserted text so consecutive dictations do not stick together.
 trailing_space = true
@@ -114,6 +118,7 @@ class AudioConfig:
 class TextConfig:
     remove_fillers: bool = True
     voice_commands: bool = True
+    spoken_punctuation: bool = True
     capitalize: bool = True
     trailing_space: bool = True
 

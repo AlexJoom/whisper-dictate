@@ -312,6 +312,7 @@ class App:
             opts = TextOptions(
                 remove_fillers=self.cfg.text.remove_fillers,
                 voice_commands=self.cfg.text.voice_commands,
+                spoken_punctuation=self.cfg.text.spoken_punctuation,
                 capitalize=self.cfg.text.capitalize,
                 trailing_space=self.cfg.text.trailing_space,
             )
