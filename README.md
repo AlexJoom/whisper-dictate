@@ -13,9 +13,11 @@ The interaction copies [Wispr Flow](https://wisprflow.ai/):
 | **`Esc`** while recording | Discards the recording |
 | Tray icon | Language (Auto / Ελληνικά / English), hands-free toggle, copy last dictation, history, config, quit |
 
-A small dark pill sits at the bottom of the screen: a thin bar while idle, a live
+A small dark pill appears at the bottom of the screen while you dictate: a live
 waveform while you talk, a shimmer while Whisper transcribes, then a short preview of
-the inserted text. It never steals keyboard focus.
+the inserted text. It never steals keyboard focus. While idle, nothing is shown; set
+`show_idle_pill = true` in the `[ui]` section of the config to keep a thin bar on
+screen as a sign that the app runs.
 
 Auto-edits, like Wispr Flow:
 

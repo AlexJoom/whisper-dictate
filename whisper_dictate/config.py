@@ -79,8 +79,8 @@ restore_clipboard = true
 terminal_classes = ["terminal", "kitty", "alacritty", "xterm", "konsole", "tilix", "ptyxis", "wezterm", "foot", "ghostty"]
 
 [ui]
-# Show the small pill at the bottom of the screen while idle (like Wispr Flow).
-show_idle_pill = true
+# Show a small pill at the bottom of the screen while idle, to indicate the app runs.
+show_idle_pill = false
 # Show the floating overlay at all.
 overlay = true
 # Show a tray icon with a menu.
@@ -136,7 +136,7 @@ class InjectConfig:
 
 @dataclass
 class UIConfig:
-    show_idle_pill: bool = True
+    show_idle_pill: bool = False
     overlay: bool = True
     tray: bool = True
     notifications: bool = True
